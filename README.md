@@ -1,4 +1,4 @@
-# Projectname
+# DisRAT
 
 > **⚠️ IMPORTANT DISCLAIMER**  
 > This tool is provided for educational and authorized testing purposes only. I am not responsible for any misuse, damage, or illegal activities conducted with this software. You must only operate it in a controlled environment with explicit consent from all parties involved. Using this software on individuals or systems without their permission is illegal and unethical. Ensure you comply with all applicable laws and regulations.
