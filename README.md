@@ -19,7 +19,6 @@
   - [Discord Commands](#discord-commands)
   - [Client Connection Workflow](#client-connection-workflow)
 - [Security Considerations](#security-considerations)
-- [Troubleshooting](#troubleshooting)
 
 ---
 
